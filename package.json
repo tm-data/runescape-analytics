@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/tm-data/runescape-analytics#readme",
   "dependencies": {
-    "runescape-api": "^1.0.9"
+    "runescape-api": "^1.0.9",
+    "unirest": "^0.5.1"
   }
 }
