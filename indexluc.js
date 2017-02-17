@@ -17,6 +17,8 @@ function handleResponse(response) {
     alphabet.forEach(function(item) {
         var number_of_records = item.items;
         var letter = item.letter;
+        /items returns the first 12 items in the category given
+        /as shown below determined by the first letter
         var number_of_pages = Math.ceil(number_of_records / 12);
 
         for (var pageIdx = 1; pageIdx <= number_of_pages; pageIdx++) {
