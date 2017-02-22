@@ -1,6 +1,6 @@
 var unirest = require('unirest');
 
-var categoryId = 5;
+var categoryId = 24;
 unirest
     .get('http://services.runescape.com/m=itemdb_rs/api/catalogue/category.json?category=' + categoryId)
     .as.json(handleResponse);
