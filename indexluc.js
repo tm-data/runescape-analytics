@@ -59,7 +59,7 @@ function fetchItemPage(category, letter, page) {
 }
 
 function handleItemResponse(response, page, letter, category) {
-    var filename = category + "-" + letter + "-" + page ;
+    var filename = 'data/'+ category + "-" + letter + "-" + page ;
     var obj = JSON.parse (response.body);
     var data = JSON.stringify(obj);
 
