@@ -1,6 +1,6 @@
 var unirest = require('unirest');
-
-var categoryId = 0;
+var fs = require("fs");
+var categoryId = 4;
 unirest
     .get('http://services.runescape.com/m=itemdb_rs/api/catalogue/category.json?category=' + categoryId)
     .as.json(handleResponse);
@@ -9,7 +9,6 @@ var requests = [];
 
 function handleResponse(response) {
     var body = JSON.parse(response.body);
-
     var alphabet = body.alpha;
 
     console.log(alphabet);
@@ -17,8 +16,8 @@ function handleResponse(response) {
     alphabet.forEach(function(item) {
         var number_of_records = item.items;
         var letter = item.letter;
-        /items returns the first 12 items in the category given
-        /as shown below determined by the first letter
+        //items returns the first 12 items in the category given
+        //as shown below determined by the first letter
         var number_of_pages = Math.ceil(number_of_records / 12);
 
         for (var pageIdx = 1; pageIdx <= number_of_pages; pageIdx++) {
@@ -52,11 +51,21 @@ function fetchItemPage(category, letter, page) {
 
     unirest
         .get(url)
-        .as.json(handleItemResponse);
+        .as.json(function(response) {
+            return handleItemResponse (response, page, letter, category)
+    });
 
     setTimeout(getNext, 6000);
 }
 
-function handleItemResponse(response) {
-    console.log(response.body);
+function handleItemResponse(response, page, letter, category) {
+    var filename = category + "-" + letter + "-" + page ;
+    var obj = JSON.parse (response.body);
+    var data = JSON.stringify(obj);
+
+    fs.writeFile(filename, data, function (err) {
+        if (err) {
+            return console.log("Error");
+        }
+    })
 }
