@@ -41,7 +41,7 @@ function readData(directory, callback) {
  * The data will be converted to a string before being written to the file.
  *
  * @param file      string      the file to write data to
- * @param data      string      the data to write to the file
+ * @param data      object      the data to write to the file
  * @param callback  fn(err)     the function called when data is written to disk.
  */
 function writeData(file, data, callback) {
