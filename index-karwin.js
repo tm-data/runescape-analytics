@@ -2,8 +2,10 @@
  * Created by KaLi on 24/02/2017.
  */
 var unirest = require('unirest');
+var fs = require('fs');
 
-var categoryId = 0;
+
+var categoryId = 7;
 unirest
     .get('http://services.runescape.com/m=itemdb_rs/api/catalogue/category.json?category=' + categoryId)
     .as.json(handleResponse);
@@ -53,11 +55,21 @@ function fetchItemPage(category, letter, page) {
 
     unirest
         .get(url)
-        .as.json(handleItemResponse);
+        .as.json(function (response) {
+        return handleItemResponse(response,category,letter,page);
+    });
 
     setTimeout(getNext, 6000);
 }
 
-function handleItemResponse(response) {
-    console.log(response.body);
+function handleItemResponse(response,category,letter,page) {
+ var bodyString = response.body;
+ var bodyObj = JSON.parse(bodyString);
+
+    fs.writeFile(category + "-" + letter + '-' + page + '-items.json' , JSON.stringify(bodyObj.items) , function(err){
+        if (err) throw console.log(err);
+    console.log('Het is gelukt!');
+});
+// node index-karwin
+
 }
