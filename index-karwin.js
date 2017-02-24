@@ -66,7 +66,7 @@ function handleItemResponse(response,category,letter,page) {
  var bodyString = response.body;
  var bodyObj = JSON.parse(bodyString);
 
-    fs.writeFile(category + "-" + letter + '-' + page + '-items.json' , JSON.stringify(bodyObj.items) , function(err){
+    fs.writeFile('data/' + category + "-" + letter + '-' + page + '-items.json' , JSON.stringify(bodyObj.items) , function(err){
         if (err) throw console.log(err);
     console.log('Het is gelukt!');
 });
