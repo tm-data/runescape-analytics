@@ -1,4 +1,5 @@
 var unirest = require('unirest');
+var fs = require('fs');
 
 var categoryId = 0;
 unirest
@@ -50,11 +51,35 @@ function fetchItemPage(category, letter, page) {
 
     unirest
         .get(url)
-        .as.json(handleItemResponse);
+        .as.json(function(response){
+            return handleItemResponse(response, category, letter, page)
+
+        })
 
     setTimeout(getNext, 6000);
 }
 
-function handleItemResponse(response) {
+function handleItemResponse(response, category, letter, page) {
     console.log(response.body);
+
+    //filename
+
+    var filename = 'data/' + category + "-" + letter + "-" + page + "-" + "items.json";
+
+    //data
+        //naar json
+    var bodyObj = JSON.parse(response.body);
+        //enkel items
+    var items = bodyObj.items;
+        //string maken
+    var data = JSON.stringify(items);
+
+    fs.writeFile(filename, data, function(err) {
+        if(err) {
+            return console.log(err);
+        }
+
+        console.log("The file was saved!");
+    });
 }
+
