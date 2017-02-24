@@ -1,6 +1,11 @@
+/**
+ * Created by KaLi on 24/02/2017.
+ */
 var unirest = require('unirest');
-var fs = require("fs");
-var categoryId = 4;
+var fs = require('fs');
+
+
+var categoryId = 7;
 unirest
     .get('http://services.runescape.com/m=itemdb_rs/api/catalogue/category.json?category=' + categoryId)
     .as.json(handleResponse);
@@ -9,6 +14,7 @@ var requests = [];
 
 function handleResponse(response) {
     var body = JSON.parse(response.body);
+
     var alphabet = body.alpha;
 
     console.log(alphabet);
@@ -16,8 +22,6 @@ function handleResponse(response) {
     alphabet.forEach(function(item) {
         var number_of_records = item.items;
         var letter = item.letter;
-        //items returns the first 12 items in the category given
-        //as shown below determined by the first letter
         var number_of_pages = Math.ceil(number_of_records / 12);
 
         for (var pageIdx = 1; pageIdx <= number_of_pages; pageIdx++) {
@@ -51,21 +55,21 @@ function fetchItemPage(category, letter, page) {
 
     unirest
         .get(url)
-        .as.json(function(response) {
-            return handleItemResponse (response, page, letter, category)
+        .as.json(function (response) {
+        return handleItemResponse(response,category,letter,page);
     });
 
     setTimeout(getNext, 6000);
 }
 
-function handleItemResponse(response, page, letter, category) {
-    var filename = 'data/'+ category + "-" + letter + "-" + page ;
-    var obj = JSON.parse (response.body);
-    var data = JSON.stringify(obj);
+function handleItemResponse(response,category,letter,page) {
+ var bodyString = response.body;
+ var bodyObj = JSON.parse(bodyString);
 
-    fs.writeFile(filename, data, function (err) {
-        if (err) {
-            return console.log("Error");
-        }
-    })
+    fs.writeFile('data/' + category + "-" + letter + '-' + page + '-items.json' , JSON.stringify(bodyObj.items) , function(err){
+        if (err) throw console.log(err);
+    console.log('Het is gelukt!');
+});
+// node index-karwin
+
 }

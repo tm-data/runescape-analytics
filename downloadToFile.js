@@ -1,23 +1,21 @@
-var unirest = require('unirest');
-var fs = require("fs");
-var categoryId = 4;
+var unirest = require('unirest'),
+    fs = require('fs');
+
+var categoryId = 0;
 unirest
     .get('http://services.runescape.com/m=itemdb_rs/api/catalogue/category.json?category=' + categoryId)
-    .as.json(handleResponse);
+    .end(handleResponse);
 
 var requests = [];
 
 function handleResponse(response) {
     var body = JSON.parse(response.body);
-    var alphabet = body.alpha;
 
-    console.log(alphabet);
+    var alphabet = body.alpha;
 
     alphabet.forEach(function(item) {
         var number_of_records = item.items;
         var letter = item.letter;
-        //items returns the first 12 items in the category given
-        //as shown below determined by the first letter
         var number_of_pages = Math.ceil(number_of_records / 12);
 
         for (var pageIdx = 1; pageIdx <= number_of_pages; pageIdx++) {
@@ -52,20 +50,24 @@ function fetchItemPage(category, letter, page) {
     unirest
         .get(url)
         .as.json(function(response) {
-            return handleItemResponse (response, page, letter, category)
-    });
+            return handleItemResponse(response, page, letter, category);
+        });
 
     setTimeout(getNext, 6000);
 }
 
 function handleItemResponse(response, page, letter, category) {
-    var filename = 'data/'+ category + "-" + letter + "-" + page ;
-    var obj = JSON.parse (response.body);
-    var data = JSON.stringify(obj);
+    // -- construct the filename
+    var filename = 'data/' + category + "-" + letter + "-" + page + "-items.json";
 
-    fs.writeFile(filename, data, function (err) {
-        if (err) {
-            return console.log("Error");
-        }
-    })
+    // -- get the data we want to write to the file
+    var obj = JSON.parse(response.body);
+    var data = JSON.stringify(obj.items);
+
+    // -- write the data to the file
+    fs.writeFile(filename, data, function(err) {
+        if (err) console.log(JSON.stringify(err));
+
+        console.log("We did it!");
+    });
 }
