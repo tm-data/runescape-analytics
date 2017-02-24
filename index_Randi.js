@@ -60,6 +60,9 @@ function handleItemResponse(response,page,letter,category) {
     var test = JSON.parse(response.body)
     fs.writeFile( 'data/'+category+ '-' + letter + '-' + page +'-test.JSON',JSON.stringify(test.items));
 }
+
+
+//loop die niet het beste is
 function restart(categoryId){
 categoryId++;
     unirest
