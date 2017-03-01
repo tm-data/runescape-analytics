@@ -69,7 +69,21 @@ function start(categoryId) {
              var test = JSON.parse(response.body);
              for(j = 0; j< test.items.length;j++) {
                  var test2 = JSON.stringify(test.items[j].current.price).replace("k", "00").replace("m", "00000");
+                 Number(test2);
+                 var id2 = JSON.stringify(test.items[j].id);
+                 var Member = JSON.stringify(test.items[j].members);
+                 var currenttrend  = JSON.stringify(test.items[j].current.trend);
+                 var trendtoday = JSON.stringify(test.items[j].today.trend);
+                 var pricetoday =  JSON.stringify(test.items[j].today.price);
+                 var name =  JSON.stringify(test.items[j].name);
                  console.log(test2);
+                 console.log(id2);
+                 console.log(Member);
+                 console.log(currenttrend);
+                 console.log(trendtoday);
+                 console.log(pricetoday);
+                 console.log(name);
+                 console.log("item number:"+(j+1));
              }
 
               if (i = JSON.stringify(test.items.length)){
