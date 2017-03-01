@@ -1,7 +1,7 @@
 var unirest = require('unirest');
 
 var fs = require('fs');
-var categoryId = 8;
+var categoryId = 1;
 start(categoryId);
 function start(categoryId){
 unirest
@@ -59,13 +59,23 @@ function fetchItemPage(category, letter, page) {
 }
 
 function handleItemResponse(response,page,letter,category) {
-    var test = JSON.parse(response.body)
+    var test = JSON.parse(response.body);
+    var test2= JSON.stringify(test.items);
+
+
+
     fs.writeFile( 'data/'+category+ '-' + letter + '-' + page +'-test.JSON',JSON.stringify(test.items));
+
 }
 
 }
 //loop die niet het beste is
 function restart(categoryId){
 categoryId++;
+if (categoryID < 33) {
 start(categoryId);
+    }
+   else{
+    return;
+    }
 }
