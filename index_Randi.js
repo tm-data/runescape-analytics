@@ -1,6 +1,7 @@
 var unirest = require('unirest');
 
 var fs = require('fs');
+var fsutils = require('./utils/fs-utils')
 var categoryId = 8;
 start(categoryId);
 function start(categoryId) {
@@ -76,6 +77,7 @@ function start(categoryId) {
                  var trendtoday = JSON.stringify(test.items[j].today.trend);
                  var pricetoday =  JSON.stringify(test.items[j].today.price);
                  var name =  JSON.stringify(test.items[j].name);
+
                  console.log(test2);
                  console.log(id2);
                  console.log(Member);
@@ -84,6 +86,8 @@ function start(categoryId) {
                  console.log(pricetoday);
                  console.log(name);
                  console.log("item number:"+(j+1));
+              //   data = json.parse(test2 + id2 + Member + currenttrend + trendtoday + pricetoday + name);
+                // fs.utils.writeData('data/test.JSON',data)
              }
 
               if (i = JSON.stringify(test.items.length)){
@@ -96,11 +100,12 @@ function start(categoryId) {
 
 //console.log(test2);
 //console.log(test3);
-        // fs.writeFile( 'data/'+category+ '-' + letter + '-' + page +'-test.JSON',JSON.stringify(test.items));
+         fs.writeFile( 'data/'+category+ '-' + letter + '-' + page +'-test.JSON',JSON.stringify(test.items));
 
 }
 
 //    }
+
 }
 //loop die niet het beste is
 function restart(categoryId){
