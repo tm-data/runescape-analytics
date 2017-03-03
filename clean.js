@@ -3,6 +3,8 @@
 var fs = require('./utils/fs-utils');
 var LineByLineReader = require('line-by-line');
 
+var runedate = process.argv[2];
+
 // 1. read the data from the data/fetched folder.
 var lr = new LineByLineReader('data/items.json');
 
