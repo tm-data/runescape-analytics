@@ -4,28 +4,33 @@ var unirest = require('unirest'),
 
 var Fetcher = require('./lib/fetcher');
 
-var data = [];
+unirest.get("https://secure.runescape.com/m=itemdb_rs/api/info.json")
+    .end(function(response) {
+        var payload = JSON.parse(response.body);
+        var runedate = payload.lastConfigUpdateRuneday;
 
-var categoryRequests = [];
+        // -- create the runedate data folder if it does not exist yet
+        fs.mkdirs('data/' + runedate);
 
-var categoryFetcher = new Fetcher(6000, function() {
-    console.log("done");
-});
+        var data = [];
 
-fs.readFile('data/_cats.json', function() {
+        var categoryRequests = [];
 
-})
+        var categoryFetcher = new Fetcher(6000, function() {
+            console.log("done");
+        });
 
-var categories = fsu.readFile("data/categories.json", function(err, categories) {
-    if (err) throw err;
+        var categories = fsu.readFile("data/categories.json", function(err, categories) {
+            if (err) throw err;
 
-    for (var i = 0; i < categories.length; i++) {
-        categoryRequests.push({url: 'http://services.runescape.com/m=itemdb_rs/api/catalogue/category.json?category=' + categories[i].index, callback: function(id) {
-            return function(payload) {
-                fs.appendFileSync("data/_cats.json", JSON.stringify({id: id, alpha: payload.alpha}) + "\n");
-            };
-        }(categories[i].index)});
-    }
+            for (var i = 0; i < categories.length; i++) {
+                categoryRequests.push({url: 'http://services.runescape.com/m=itemdb_rs/api/catalogue/category.json?category=' + categories[i].index, callback: function(id) {
+                    return function(payload) {
+                        fs.appendFileSync("data/" + runedate + "/_cats.json", JSON.stringify({id: id, alpha: payload.alpha}) + "\n");
+                    };
+                }(categories[i].index)});
+            }
 
-    categoryFetcher.run(categoryRequests);
-});
+            categoryFetcher.run(categoryRequests);
+        });
+    });
