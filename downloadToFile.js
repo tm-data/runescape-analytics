@@ -1,10 +1,10 @@
-var unirest = require('unirest');
-var fs = require('fs');
+var unirest = require('unirest'),
+    fs = require('fs');
 
 var categoryId = 0;
 unirest
     .get('http://services.runescape.com/m=itemdb_rs/api/catalogue/category.json?category=' + categoryId)
-    .as.json(handleResponse);
+    .end(handleResponse);
 
 var requests = [];
 
@@ -12,8 +12,6 @@ function handleResponse(response) {
     var body = JSON.parse(response.body);
 
     var alphabet = body.alpha;
-
-    console.log(alphabet);
 
     alphabet.forEach(function(item) {
         var number_of_records = item.items;
@@ -51,35 +49,25 @@ function fetchItemPage(category, letter, page) {
 
     unirest
         .get(url)
-        .as.json(function(response){
-            return handleItemResponse(response, category, letter, page)
-
-        })
+        .as.json(function(response) {
+            return handleItemResponse(response, page, letter, category);
+        });
 
     setTimeout(getNext, 6000);
 }
 
-function handleItemResponse(response, category, letter, page) {
-    console.log(response.body);
+function handleItemResponse(response, page, letter, category) {
+    // -- construct the filename
+    var filename = 'data/' + category + "-" + letter + "-" + page + "-items.json";
 
-    //filename
+    // -- get the data we want to write to the file
+    var obj = JSON.parse(response.body);
+    var data = JSON.stringify(obj.items);
 
-    var filename = 'data/' + category + "-" + letter + "-" + page + "-" + "items.json";
-
-    //data
-        //naar json
-    var bodyObj = JSON.parse(response.body);
-        //enkel items
-    var items = bodyObj.items;
-        //string maken
-    var data = JSON.stringify(items);
-
+    // -- write the data to the file
     fs.writeFile(filename, data, function(err) {
-        if(err) {
-            return console.log(err);
-        }
+        if (err) console.log(JSON.stringify(err));
 
-        console.log("The file was saved!");
+        console.log("We did it!");
     });
 }
-

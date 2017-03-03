@@ -1,6 +1,9 @@
 var unirest = require('unirest');
 
-var categoryId = 6;
+var fs = require('fs');
+var categoryId = 8;
+start(categoryId);
+function start(categoryId){
 unirest
     .get('http://services.runescape.com/m=itemdb_rs/api/catalogue/category.json?category=' + categoryId)
     .as.json(handleResponse);
@@ -30,7 +33,7 @@ function handleResponse(response) {
 
 
 function getNext() {
-    if (requests.length == 0) return;
+    if (requests.length == 0) restart(categoryId);
     else {
         var request = requests.pop();
 
@@ -50,11 +53,19 @@ function fetchItemPage(category, letter, page) {
 
     unirest
         .get(url)
-        .as.json(handleItemResponse);
+        .as.json(function (response){return handleItemResponse(response, page, letter, category); });
 
     setTimeout(getNext, 6000);
 }
 
-function handleItemResponse(response) {
-    console.log(response.body);
+function handleItemResponse(response,page,letter,category) {
+    var test = JSON.parse(response.body)
+    fs.writeFile( 'data/'+category+ '-' + letter + '-' + page +'-test.JSON',JSON.stringify(test.items));
+}
+
+}
+//loop die niet het beste is
+function restart(categoryId){
+categoryId++;
+start(categoryId);
 }
