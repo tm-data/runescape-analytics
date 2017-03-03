@@ -1,61 +1,60 @@
-var fs = require('./utils/fs-utils');
-
 // -- cleanup.js
 // -- Clean the fetched data
-
-
+var fs = require('./utils/fs-utils');
+var LineByLineReader = require('line-by-line');
 
 // 1. read the data from the data/fetched folder.
-fs.readData('data/fetched', function(err, filename, json) {
-    json.forEach(function(item) {
-        var transformedItem = transform(item);
+var lr = new LineByLineReader('data/items.json');
 
-        save(transformedItem);
-    });
+lr.on('error', function (err) {
+    console.log(JSON.stringify(err));
+});
+
+lr.on('line', function (line) {
+    var item = JSON.parse(line);
+
+    var transformedItem = transform(item);
+
+    save(transformedItem);
+});
+
+lr.on('end', function () {
+    console.log("Ended");
 });
 
 // 2. transform the data
 function transform(item) {
     // do the transformation
-    var price = item.current.price;
-    if (typeof(price) == 'string') {
-        if (price.lastIndexOf('k') == price.length - 1) {
-            var amount = price.substring(0, price.length - 1);
-            item.current.price = amount * 1000;
-        } else if (price.lastIndexOf('K') == price.length - 1) {
-            var amount = price.substring(0, price.length - 1);
-            item.current.price = amount * 1000;
-        } else if (price.lastIndexOf('m') == price.length - 1) {
-            var amount = price.substring(0, price.length - 1);
-            item.current.price = amount * 1000 * 1000;
-        } else if (price.lastIndexOf('M') == price.length - 1) {
-            var amount = price.substring(0, price.length - 1);
-            item.current.price = amount * 1000 * 1000;
-        }
-    }
-
-    price = item.today.price;
-    if (typeof(price) == 'string') {
-        if (price.lastIndexOf('k') == price.length - 1) {
-            var amount = price.substring(0, price.length - 1);
-            item.today.price = amount * 1000;
-        } else if (price.lastIndexOf('K') == price.length - 1) {
-            var amount = price.substring(0, price.length - 1);
-            item.today.price = amount * 1000;
-        } else if (price.lastIndexOf('m') == price.length - 1) {
-            var amount = price.substring(0, price.length - 1);
-            item.today.price = amount * 1000 * 1000;
-        } else if (price.lastIndexOf('M') == price.length - 1) {
-            var amount = price.substring(0, price.length - 1);
-            item.today.price = amount * 1000 * 1000;
-        }
-    }
-
-    delete item.icon;
-    delete item.icon_large;
-    delete item.typeIcon;
+    item.current.price = transformPrice(item.current.price);
 
     return item;
+}
+
+function transformPrice(price) {
+    var multipliers = {
+        "m" : 1000 * 1000,
+        "k" : 1000
+    };
+
+    if (typeof(price) == 'string') {
+        var lastCharacter = price.substring(price.length - 1);
+
+        var multiplier = multipliers[lastCharacter.toLowerCase()];
+        var amount = 0;
+
+        if (multiplier == null) {
+            multiplier = 1;
+            amount = price;
+        } else {
+            amount = price.substring(0, price.length - 1);
+        }
+
+        amount = amount.replace(",", "");
+
+        return parseInt(amount) * multiplier;
+    } else {
+        return price;
+    }
 }
 
 // 3. write the data to the file
