@@ -6,7 +6,7 @@ var LineByLineReader = require('line-by-line');
 var runedate = process.argv[2];
 
 // 1. read the data from the data/fetched folder.
-var lr = new LineByLineReader('data/items.json');
+var lr = new LineByLineReader('runedate');
 
 lr.on('error', function (err) {
     console.log(JSON.stringify(err));
@@ -58,6 +58,7 @@ function transformPrice(price) {
         return price;
     }
 }
+
 
 // 3. write the data to the file
 function save(item) {
