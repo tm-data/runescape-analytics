@@ -1,9 +1,17 @@
 var fs = require('fs');
 
 module.exports = {
+    readFile: readJsonFile,
     readData: readData,
     writeData: writeData
 };
+
+function readJsonFile(filename, callback) {
+    return fs.readFile(filename, 'utf8', function(err, content) {
+        if (err) return callback(err);
+        else return callback(null, JSON.parse(content));
+    });
+}
 
 /**
  * Read the data from a directory.
