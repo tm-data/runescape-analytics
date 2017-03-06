@@ -1,65 +1,83 @@
-var fs = require('./utils/fs-utils');
-var LineByLineReader = require('line-by-line');
-var elastic = require('elasticsearch')
 // -- cleanup.js
 // -- Clean the fetched data
-
-var client = new elasticsearch.Client({
-    host: 'localhost:9200',
-    log: 'trace'
-});
+var fs = require('./utils/fs-utils');
+var LineByLineReader = require('line-by-line');
+var fs2 = require('fs')
+var runedate = process.argv[2];
 
 // 1. read the data from the data/fetched folder.
-    lr = new LineByLineReader('./data/items.json');
-    lr.on('line', function (line) {
-        var item = JSON.parse(line)
-            var transformedItem = transform(item);
-            save(transformedItem);
-    });
+var lr = new LineByLineReader('data/items.json');
 
+lr.on('error', function (err) {
+    console.log(JSON.stringify(err));
+});
 
+lr.on('line', function (line) {
+    var item = JSON.parse(line);
+
+    var transformedItem = transform(item);
+
+    save(transformedItem);
+});
+
+lr.on('end', function () {
+    console.log("Ended");
+});
 
 // 2. transform the data
 function transform(item) {
     // do the transformation
-    var price = JSON.parse(item).current.price;
-    if (typeof(price) == 'string') {
-        if (price.lastIndexOf('k') == price.length - 1) {
-            var amount = price.substring(0, price.length - 1);
-            item.current.price = amount * 1000;
-        } else if (price.lastIndexOf('K') == price.length - 1) {
-            var amount = price.substring(0, price.length - 1);
-            item.current.price = amount * 1000;
-        } else if (price.lastIndexOf('m') == price.length - 1) {
-            var amount = price.substring(0, price.length - 1);
-            item.current.price = amount * 1000 * 1000;
-        } else if (price.lastIndexOf('M') == price.length - 1) {
-            var amount = price.substring(0, price.length - 1);
-            item.current.price = amount * 1000 * 1000;
-        }
-    }
-
-
-
-    delete item.icon;
-    delete item.icon_large;
-    delete item.typeIcon;
+    item.current.price = transformPrice(item.current.price);
 
     return item;
 }
 
-// 3. write the data to the file
-function save(item){
-  //  fs.appendFile('data/itemstest.json', JSON.stringify(line) + "\n", function(err) {
-   //     if (err) throw err;
+function transformPrice(price) {
+    var multipliers = {
+        "m" : 1000 * 1000,
+        "k" : 1000
+    };
 
-client.update({
-    index:'runescape-1'
-        mappings:''
-        console.log('item written');
-});
+    if (typeof(price) == 'string') {
+        var lastCharacter = price.substring(price.length - 1);
+
+        var multiplier = multipliers[lastCharacter.toLowerCase()];
+        var amount = 0;
+
+        if (multiplier == null) {
+            multiplier = 1;
+            amount = price;
+        } else {
+            amount = price.substring(0, price.length - 1);
+        }
+
+        amount = amount.replace(",", "");
+
+        return parseInt(amount) * multiplier;
+    } else {
+        return price;
+    }
 }
 
+// 3. write the data to the file
+function save(item) {
+    fs2.appendFile('data/categories.json', JSON.stringify(item.name) +' '+ JSON.stringify(item.icon) + "\n", function(err) {
+        if (err) throw err;
+
+        console.log('item written');
+    });
+    fs2.appendFile('data/pricing.json', JSON.stringify(item.current.price) + "\n", function(err) {
+        if (err) throw err;
+
+        console.log('item written');
+    });
+    fs2.appendFile('data/item.json', JSON.stringify(item.name) +' '+JSON.stringify(item.description)  +' \n'+ JSON.stringify(item.icon) +' \n'+  JSON.stringify(item.icon_large) +' \n'+  JSON.stringify(item.members)+"\n", function(err) {
+        if (err) throw err;
+
+        console.log('item written');
+    });
+
+}
 
 
 
