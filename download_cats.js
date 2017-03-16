@@ -20,7 +20,7 @@ unirest.get("https://secure.runescape.com/m=itemdb_rs/api/info.json")
             console.log("done");
         });
 
-        var categories = fsu.readFile("data/categories.json", function(err, categories) {
+        var categories = fsu.readContent("data/categories.json", function(err, categories) {
             if (err) throw err;
 
             for (var i = 0; i < categories.length; i++) {
