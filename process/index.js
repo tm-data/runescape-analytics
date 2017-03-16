@@ -13,21 +13,15 @@ function handleError(err) {
 
 function handleDone() {
     console.log("Processing Complete");
-    fsu.appendFile('data/categories2.json', categories + "\n", function(err) {
-        if (err) throw err;
+    fsu.appendToFile('data/categories3.json', categories);
+        console.log('item written');
+
+    fsu.appendToFile('data/pricing3.json', prices);
 
         console.log('item written');
-    });
-    fsu.appendFile('data/pricing2.json', prices + "\n", function(err) {
-        if (err) throw err;
 
-        console.log('item written');
-    });
-    fsu.appendFile('data/item2.json', items+' \n', function(err) {
-        if (err) throw err;
+    fsu.appendToFile('data/item3.json', items);
 
-        console.log('item written');
-    });
 }
 
 function handleItem(item) {
@@ -38,11 +32,11 @@ function handleItem(item) {
 
 function handlecategory(item) {
 var category ={
-     id : item.type.toLowerCase(),
+     categoryID : item.type.toLowerCase(),
     name: item.type,
     icon: item.typeIcon
 };
-    if (categories.indexOf(category.id) == -1) {
+    if (categories.indexOf(category.categoryID) == -1) {
         categories.push(category);
         console.log('test3');
     }
@@ -54,12 +48,14 @@ function handlepricing(item){
     console.log('test4');
     var pricing  = {
         price: item.current.price,
-        categoryID: item.type.toLowerCase()
+        categoryID: item.type.toLowerCase(),
+        timestamp :  ru.convertRuneDate(runedate),
+        trend: item.current.trend,
+        itemID: item.id
     };
     var categoryID = item.type.toLowerCase();
     ru.convertPrice(pricing.price);
-    prices.push(pricing.price);
-    prices.push(categoryID);
+    prices.push(pricing);
 }
 
 function handleitems(item){
@@ -67,7 +63,8 @@ function handleitems(item){
         member: item.Member,
         name: item.name,
         Description: item.description,
-        icon: item.icon
+        icon: item.icon,
+        itemID: item.id
     };
     console.log('test5');
     if (items.indexOf(item.Name)==-1){
