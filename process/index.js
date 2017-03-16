@@ -1,17 +1,17 @@
-var fsUtils = require('../utils/fs-utils');
+var fsu = require('../utils/fs-utils');
 
+var runedate = process.argv[2];
 
-// -- reading data:
-// var directory = "";
-// fsUtils.readData(directory, function(filename, json) {
-//
-// });
+fsu.readLineByLine('data/' + runedate + '/items.json', handleItem, handleError, handleDone);
 
-// -- writing data:
-// var data = {};
-// var filename = "";
-// fsUtils.writeData(filename, data, function(err) {
-//     if (err) console.log(JSON.stringify(err));
-//
-//     console.log("Data Saved!");
-// });
+function handleError(err) {
+    console.log(JSON.stringify(err));
+}
+
+function handleDone() {
+    console.log("Processing Complete");
+}
+
+function handleItem(item) {
+
+}
