@@ -3,11 +3,18 @@ var LineByLineReader = require('line-by-line');
 
 module.exports = {
     readLineByLine: readLineByLine,
-    readFile: readJsonFile,
-    readData: readData,
-    writeData: writeData
+    appendToFile: appendToFile,
+    readContent: readJsonFile
 };
 
+/**
+ * Read the given file, one line at a time.
+ *
+ * @param filename      the filename of the file to read
+ * @param lineCallback  the function called on each line occurance
+ * @param errorCallback the function called in case of an error
+ * @param endCallback   the function called when all items have been processed
+ */
 function readLineByLine(filename, lineCallback, errorCallback, endCallback) {
     var lr = new LineByLineReader(filename);
 
@@ -24,52 +31,29 @@ function readLineByLine(filename, lineCallback, errorCallback, endCallback) {
     lr.on('end', endCallback);
 }
 
+/**
+ * Append the given object to the given file.
+ *
+ *  The file will be created if it does not already exists.
+ *  The object will be converted to json as part of this method.
+ *
+ * @param filename  the filename of the file to which we want to append data
+ * @param obj       the object to append to the file
+ */
+function appendToFile(filename, obj) {
+    return fs.appendFileSync(filename, JSON.stringify(obj) + "\n");
+}
+
+/**
+ * Read the contents of a json file
+ *
+ * @param filename  the json file to read
+ * @param callback
+ * @returns {*}
+ */
 function readJsonFile(filename, callback) {
-    return fs.readFile(filename, 'utf8', function(err, content) {
+    return fs.readContent(filename, 'utf8', function(err, content) {
         if (err) return callback(err);
         else return callback(null, JSON.parse(content));
     });
-}
-
-/**
- * Read the data from a directory.
- *
- * The data read from the file will be parsed into an object before
- * being passed to the callback.
- *
- * @param directory string                      the directory to read the data from
- * @param callback  fn(err,filename,json)       the function called for each file read in the directory
- *                                              err is the error in case one occured
- *                                              filename is the filename of the file which was read
- *                                              json is the json data stored in the file
- */
-function readData(directory, callback) {
-    fs.readdir(directory, function(files) {
-        if (files == null) return;
-
-        files.forEach(function(file) {
-            fs.readFile(directory + '/' + file, 'utf8', function(err, data) {
-                if (err) return callback(err);
-
-                try {
-                    callback(null, file, JSON.parse(data));
-                } catch (err) {
-                    callback(err);
-                }
-            });
-        });
-    });
-}
-
-/**
- * write data to a file.
- *
- * The data will be converted to a string before being written to the file.
- *
- * @param file      string      the file to write data to
- * @param data      object      the data to write to the file
- * @param callback  fn(err)     the function called when data is written to disk.
- */
-function writeData(file, data, callback) {
-    return fs.writeFile(file, JSON.stringify(data), callback);
 }
