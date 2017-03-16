@@ -17,14 +17,20 @@ function handleError(err) {
 }
 
 function handleDone() {
-    console.log("Processing Complete");
+    // console.log("Processing Complete");
     categories.forEach(function(item) {
         fsu.appendToFile('data/' + runedate + '/db_categories.json', item)
     });
 
 //fsu.appendToFile(db_prices);
-// fsu.appendToFile(db_items);
+    prices.forEach(function(item) {
+        fsu.appendToFile('data/' + runedate + '/db_prices.json', item)
+    });
 
+// fsu.appendToFile(db_items);
+    items.forEach(function(item) {
+        fsu.appendToFile('data/' + runedate + '/items.json', item)
+    });
 }
 
 function handleItem(item) {
