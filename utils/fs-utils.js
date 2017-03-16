@@ -1,10 +1,28 @@
 var fs = require('fs');
+var LineByLineReader = require('line-by-line');
 
 module.exports = {
+    readLineByLine: readLineByLine,
     readFile: readJsonFile,
     readData: readData,
     writeData: writeData
 };
+
+function readLineByLine(filename, lineCallback, errorCallback, endCallback) {
+    var lr = new LineByLineReader(filename);
+
+    lr.on('error', errorCallback);
+
+    lr.on('line', function (line) {
+        if (line.length == 0) return;
+
+        var item = JSON.parse(line);
+
+        lineCallback(item);
+    });
+
+    lr.on('end', endCallback);
+}
 
 function readJsonFile(filename, callback) {
     return fs.readFile(filename, 'utf8', function(err, content) {
