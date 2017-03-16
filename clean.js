@@ -1,10 +1,17 @@
 // -- cleanup.js
 // -- Clean the fetched data
+//jens
 var fs = require('./utils/fs-utils');
 var LineByLineReader = require('line-by-line');
 
+var path = require("path");
+var dirname = path.dirname('5478/items.json');
+console.log(path.dirname('5478/items.json'));
+console.log(dirname);
+
+
 // 1. read the data from the data/fetched folder.
-var lr = new LineByLineReader('data/items.json');
+var lr = new LineByLineReader('data/'+  +'/items.json');
 
 lr.on('error', function (err) {
     console.log(JSON.stringify(err));
@@ -59,14 +66,9 @@ function transformPrice(price) {
 
 // 3. write the data to the file
 function save(item) {
-    fs.appendFile('data/items.jsl', JSON.stringify(item) + "\n", function(err) {
+    fs.appendFile('data/'+runedate+'/items.jsl', JSON.stringify(item) + "\n", function(err) {
         if (err) throw err;
 
         console.log('item written');
     });
 }
-
-
-
-
-
