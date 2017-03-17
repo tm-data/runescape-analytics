@@ -66,11 +66,11 @@ function handleItem(item) {
 
 
     //pricing
-var pricing = {
-    id: item.type.toLowerCase(),
-    price: item.current.price
-};
-if (prices.indexOf(pricing) == -1)
-    prices.push(pricing);
+    var pricing = {
+        id: item.type.toLowerCase(),
+        price: item.current.price
+    };
+    if (prices.indexOf(pricing) == -1)
+        prices.push(pricing);
 
 }
