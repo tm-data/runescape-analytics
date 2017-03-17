@@ -1,0 +1,101 @@
+var fsu = require('../utils/fs-utils');
+var ru=  require ('../utils/runescape');
+
+var runedate = process.argv[2];
+
+
+var categories = [];
+var prices = [];
+var items = [];
+
+fsu.readLineByLine('data/' + runedate + '/items.json', handleItem, handleError, handleDone);
+
+function handleError(err) {
+    console.log(JSON.stringify(err));
+}
+
+function handleDone() {
+    console.log("Processing Complete");
+}
+
+function handleItem(item) {
+
+
+    for (i = 0; i < items.length; i++) {
+        fsu.appendToFile('data/' + runedate + '/db_items.json', JSON.stringify(categories[i]) + "\n", function (err) {
+            if (err) throw err;
+
+            console.log('item written');
+        });
+    }
+
+    for (j = 0; j < prices.length; j++) {
+        fsu.appendToFile('data/' + runedate + '/db_pricing.json', JSON.stringify(prices[j]) + "\n", function (err) {
+            if (err) throw err;
+
+            console.log('item written');
+        });
+    }
+
+    for (k = 0; k < categories.length; k++) {
+
+        fsu.appendToFile('data/' + runedate + '/db_categories.json', JSON.stringify(categories[k]) + "\n", function (err) {
+            if (err) throw err;
+
+            console.log('item written');
+        })
+    }
+}
+
+
+
+
+
+//category
+function handleItemCategory(item)
+{
+    var category =
+        {
+            id: item.type.toLowerCase(),
+            name: item.type,
+            icon: item.icon
+        };
+    if (categories.indexOf(category) < 0)
+        categories.push(category);
+
+    return items;
+}
+
+//item
+function handeItemDetail(item, category)
+{
+    var item =
+        {
+            categoryid: item.id,
+            name: item.name,
+            description: item.description,
+            icon: item.icon,
+            iconlarge: item.icon_large,
+            members: item.members
+        };
+    if (items.indexOf(item) < 0)
+        items.push(item);
+
+    return categories;
+}
+
+
+//prices
+function handleItemPricing(item)
+{
+    var price =
+        {
+            price: null,
+            trend: null,
+            timestamp: null
+        };
+    if (prices.indexOf(price) < 0)
+        prices.push(price);
+
+    return prices;
+}
