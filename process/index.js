@@ -1,9 +1,12 @@
-var fsu = require('../utils/fs-utils');
-var ru = require('../utils/runescape');
+var fsu = require('../utils/fs-utils'),
+    ru = require('../utils/runescape');
+
+var runedate = process.argv[2];
+var actualDate = ru.convertRuneDate(runedate);
+
 var categories = [];
 var prices = [];
 var items = [];
-var runedate = process.argv[2];
 
 fsu.readLineByLine('data/' + runedate + '/items.json', handleItem, handleError, handleDone);
 
@@ -12,66 +15,73 @@ function handleError(err) {
 }
 
 function handleDone() {
-    console.log("Processing Complete");
-    fsu.appendToFile('data/categories6.json', categories);
-        console.log('item written');
+    categories.forEach(function(category) {
+        fsu.appendToFile('data/' + runedate + '/db_categories.json', category);
+    });
 
-    fsu.appendToFile('data/pricing5.json', prices);
+    items.forEach(function(detail) {
+        fsu.appendToFile('data/' + runedate + '/db_items.json', detail);
+    });
 
-        console.log('item written');
-
-    fsu.appendToFile('data/item5.json', items);
-
+    prices.forEach(function(price) {
+        fsu.appendToFile('data/' + runedate + '/db_prices.json', price);
+    })
 }
 
 function handleItem(item) {
-     handlecategory(item);
-     handlepricing(item);
-     handleitems(item);
+    var category = handleItemCategory(item);
+    var detail = handleItemDetail(item, category);
+    var pricing = handleItemPricing(item, category, detail);
 }
 
-function handlecategory(item) {
-var category ={
-     categoryID : item.type.toLowerCase(),
-    name: item.type,
-    icon: item.typeIcon
-};
-    if (categories.search(category.categoryID) == -1) {
+function handleItemCategory(item) {
+    // -- get the category from the item
+    var category = {
+        id: item.type.toLowerCase(),
+        name: item.type,
+        icon: item.typeIcon
+    };
+
+    // -- add the category to the list of categories if needed
+    if (categories.indexOf(category) == -1)
         categories.push(category);
-        console.log('test3');
-    }
 
+    // -- return the category
+    return category;
 }
 
-
-function handlepricing(item){
-    console.log('test4');
-    var pricing  = {
-        price: item.current.price,
-        categoryID: item.type.toLowerCase(),
-        timestamp :  ru.convertRuneDate(runedate),
-        trend: item.current.trend,
-        itemID: item.id
-    };
-    var categoryID = item.type.toLowerCase();
-    ru.convertPrice(pricing.price);
-    prices.push(pricing);
-}
-
-function handleitems(item){
-    items2 = {
-        member: item.Member,
-        name: item.name,
-        Description: item.description,
+function handleItemDetail(item, category) {
+    // -- get the item detail from the item
+    var detail = {
+        id: item.id,
         icon: item.icon,
-        itemID: item.id,
-        categoryID: item.type.toLowerCase()
+        category: category.id,
+        name: item.name,
+        description: item.description,
+        forMembersOnly: item.members
     };
-    console.log('test5');
-    if (items.search(item.Name)==-1){
-       items.push(items2);
-        console.log('test6');
-    }
 
+    // -- add the item to the list of items if needed
+    if (items.indexOf(item) == -1)
+        items.push(detail);
+
+    // -- return the item detail
+    return detail;
 }
 
+function handleItemPricing(item, category, detail) {
+    // -- create the pricing information
+    var pricing = {
+        category: category.id,
+        item: detail.id,
+        timestamp: actualDate,
+        trend: item.current.trend,
+        price: ru.convertPrice(item.current.price)
+    };
+
+    // -- add the price to the pricing information list
+    prices.push(pricing);
+
+    // -- return the pricing information
+    return pricing;
+}
