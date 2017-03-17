@@ -5,8 +5,8 @@ var runedate = process.argv[2];
 var actualDate = ru.convertRuneDate(runedate);
 
 var categories = {};
-var prices = [];
 var items = {};
+var prices = [];
 
 fsu.readLineByLine('data/' + runedate + '/items.json', handleItem, handleError, handleDone);
 
@@ -15,13 +15,15 @@ function handleError(err) {
 }
 
 function handleDone() {
-    Object.keys (categories).forEach(function(key) {
-        fsu.appendToFile('data/' + runedate + '/db_categories.json', categories[key]);
-    });
+    var categoryKeys = Object.keys(categories);
+    for (var i = 0; i < categoryKeys.length; i++) {
+        fsu.appendToFile('data/' + runedate + '/db_categories.json', categories[categoryKeys[i]]);
+    }
 
-    Object.keys (items).forEach(function(key) {
-        fsu.appendToFile('data/' + runedate + '/db_items.json', items[key]);
-    });
+    var itemKeys = Object.keys(items);
+    for (var j = 0; j < itemKeys.length; j++) {
+        fsu.appendToFile('data/' + runedate + '/db_items.json', items[itemKeys[j]]);
+    }
 
     prices.forEach(function(price) {
         fsu.appendToFile('data/' + runedate + '/db_prices.json', price);
@@ -41,11 +43,10 @@ function handleItemCategory(item) {
         name: item.type,
         icon: item.typeIcon
     };
-    var key = category.id;
 
-    if (!categories[key])
-        categories[key] = category;
-
+    // -- add the category to the list of categories if needed
+    if (! categories[category.id])
+        categories[category.id] = category;
 
     // -- return the category
     return category;
@@ -62,10 +63,9 @@ function handleItemDetail(item, category) {
         forMembersOnly: item.members
     };
 
-    var key = detail.id;
-
-    if (!items[key])
-        items[key] = detail;
+    // -- add the item to the list of items if needed
+    if (! items[detail.id])
+        items[detail.id] = detail;
 
     // -- return the item detail
     return detail;
