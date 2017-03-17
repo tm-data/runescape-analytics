@@ -1,9 +1,10 @@
 var fsu = require('../utils/fs-utils'),
-    ru = require('../utils/runescape');
+    ru = require('../utils/runescape'),
+    elastic = require('../utils/es-utils');
 
 var runedate = process.argv[2];
 var actualDate = ru.convertRuneDate(runedate);
-
+var client = elastic.client.local();
 var categories = {};
 var items = {};
 var prices = [];
@@ -18,22 +19,22 @@ function handleDone() {
     var categoryKeys = Object.keys(categories);
     for (var i = 0; i < categoryKeys.length; i++) {
         fsu.appendToFile('data/' + runedate + '/db_categories.json', categories[categoryKeys[i]]);
+        elastic.store(client, runescape - 1, category, i, categories[categoryKeys[i]], err);
     }
+        var itemKeys = Object.keys(items);
+        for (var j = 0; j < itemKeys.length; j++) {
+            fsu.appendToFile('data/' + runedate + '/db_items.json', items[itemKeys[j]]);
+        }
 
-    var itemKeys = Object.keys(items);
-    for (var j = 0; j < itemKeys.length; j++) {
-        fsu.appendToFile('data/' + runedate + '/db_items.json', items[itemKeys[j]]);
+        prices.forEach(function (price) {
+            fsu.appendToFile('data/' + runedate + '/db_prices.json', price);
+        })
     }
-
-    prices.forEach(function(price) {
-        fsu.appendToFile('data/' + runedate + '/db_prices.json', price);
-    })
-}
 
 function handleItem(item) {
     var category = handleItemCategory(item);
     var detail = handleItemDetail(item, category);
-    var pricing = handleItemPricing(item, category, detail);
+  handleItemPricing(item, category, detail);
 }
 
 function handleItemCategory(item) {
@@ -84,6 +85,5 @@ function handleItemPricing(item, category, detail) {
     // -- add the price to the pricing information list
     prices.push(pricing);
 
-    // -- return the pricing information
-    return pricing;
+
 }
