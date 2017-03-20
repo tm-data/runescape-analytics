@@ -11,7 +11,8 @@ module.exports = {
 function localClient() {
     return new ElasticSearch.Client({
         host: 'localhost:9200',
-        log: 'debug'
+        log: 'debug',
+        requestTimeout: 60000
     });
 }
 

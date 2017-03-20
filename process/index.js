@@ -43,7 +43,7 @@ function handleDone() {
 
         }
 
-         es.storeparent(client, 'runescape-1', 'item', 1 ,items,1, console.log('klaar'));
+         es.storeparent(client, 'runescape-1', 'item',1,items,1, console.log('klaar'));
         prices.forEach(function (price) {
             fsu.appendToFile('data/' + runedate + '/db_prices.json', price);
         })
