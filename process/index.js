@@ -19,8 +19,24 @@ function handleDone() {
     var categoryKeys = Object.keys(categories);
     for (var i = 0; i < categoryKeys.length; i++) {
         fsu.appendToFile('data/' + runedate + '/db_categories.json', categories[categoryKeys[i]]);
-        es.store(client, 'runescape-1', 'string', 1,'data/' + runedate + '/db_categories.json' , console.log('klaar'));
+
     }
+    es.store(client, 'runescape-1', 'category', 1,categories , console.log('klaar'));
+    client.search({
+        index: 'runescape-1',
+        type: 'category',
+        body: {
+            query: {
+                match: {
+                    body: 'arrows'
+                }
+            }
+        }
+    }).then(function (resp) {
+        var hits = resp.hits.hits;
+    }, function (err) {
+        console.trace(err.message);
+    });
         var itemKeys = Object.keys(items);
         for (var j = 0; j < itemKeys.length; j++) {
             fsu.appendToFile('data/' + runedate + '/db_items.json', items[itemKeys[j]]);
