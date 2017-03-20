@@ -1,10 +1,10 @@
 var fsu = require('../utils/fs-utils'),
     ru = require('../utils/runescape'),
-    elastic = require('../utils/es-utils');
+    es = require('../utils/es-utils');
 
 var runedate = process.argv[2];
 var actualDate = ru.convertRuneDate(runedate);
-var client = elastic.client.local();
+var client = es.client.local();
 var categories = {};
 var items = {};
 var prices = [];
@@ -19,7 +19,7 @@ function handleDone() {
     var categoryKeys = Object.keys(categories);
     for (var i = 0; i < categoryKeys.length; i++) {
         fsu.appendToFile('data/' + runedate + '/db_categories.json', categories[categoryKeys[i]]);
-        elastic.store(client, runescape - 1, category, i, categories[categoryKeys[i]], err);
+        es.store(client, 'runescape-1', 'string', 1,'data/' + runedate + '/db_categories.json' , console.log('klaar'));
     }
         var itemKeys = Object.keys(items);
         for (var j = 0; j < itemKeys.length; j++) {

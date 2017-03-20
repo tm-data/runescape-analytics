@@ -8,7 +8,7 @@ module.exports = {
 };
 
 function localClient() {
-    return new ElasticSearch({
+    return new ElasticSearch.Client({
         host: 'localhost:9200',
         log: 'debug'
     });
