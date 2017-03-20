@@ -40,8 +40,10 @@ function handleDone() {
         var itemKeys = Object.keys(items);
         for (var j = 0; j < itemKeys.length; j++) {
             fsu.appendToFile('data/' + runedate + '/db_items.json', items[itemKeys[j]]);
+
         }
 
+         es.storeparent(client, 'runescape-1', 'item', 1 ,items,1, console.log('klaar'));
         prices.forEach(function (price) {
             fsu.appendToFile('data/' + runedate + '/db_prices.json', price);
         })
