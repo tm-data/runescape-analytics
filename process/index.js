@@ -21,32 +21,20 @@ function handleDone() {
         fsu.appendToFile('data/' + runedate + '/db_categories.json', categories[categoryKeys[i]]);
 
     }
-    es.store(client, 'runescape-1', 'category', 1,categories , console.log('klaar'));
-    client.search({
-        index: 'runescape-1',
-        type: 'category',
-        body: {
-            query: {
-                match: {
-                    body: 'arrows'
-                }
-            }
-        }
-    }).then(function (resp) {
-        var hits = resp.hits.hits;
-    }, function (err) {
-        console.trace(err.message);
-    });
+    es.store(client, 'runescape-1', 'category', "test" ,categories , console.log('klaar'));
+
         var itemKeys = Object.keys(items);
         for (var j = 0; j < itemKeys.length; j++) {
             fsu.appendToFile('data/' + runedate + '/db_items.json', items[itemKeys[j]]);
 
         }
 
-         es.storeparent(client, 'runescape-1', 'item',1,items,1, console.log('klaar'));
+         es.storeparent(client, 'runescape-1', 'item',2,items,"test", console.log('klaar'));
+        // es.store(client, 'runescape-1', 'item',1,items, console.log('klaar'));
         prices.forEach(function (price) {
             fsu.appendToFile('data/' + runedate + '/db_prices.json', price);
-        })
+        });
+   es.storeparent(client, 'runescape-1', 'pricing',1,prices,2, console.log('klaar'));
     }
 
 function handleItem(item) {
